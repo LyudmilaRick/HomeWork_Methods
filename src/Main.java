@@ -28,23 +28,28 @@ public class Main {
         // Задание 6
         System.out.println("// Задание 6");
         int numMonth = 12;
-        culcSumMonthAverage(numMonth);
+        if (numMonth > 12) {
+            throw new RuntimeException("Некорректные данные для расчета!");
+        }
+        // Для получения массива случайных чисел
+        int[] arr = generateRandomArray(culcDayMonth(numMonth));
+        culcSumMonthAverage(arr);
     }
 
-    public static void checkYear(int number) {
+    public static void checkYear(int year) {
         // первый метод проверит, второй - напечатает
-        boolean checkYearForLeap = isLeapYear(number);
-        printIsYearLeapResult(number, checkYearForLeap);
+        boolean checkYearForLeap = isLeapYear(year);
+        printIsYearLeapResult(year, checkYearForLeap);
     }
-
-    private static boolean isLeapYear(int number) {
-        if (number % 400 == 0 || number % 4 == 0 && number % 100 != 0) {
+    
+    private static boolean isLeapYear(int year) {
+        if (year % 400 == 0 || year % 4 == 0 && year % 100 != 0) {
             return true;
         } else {
             return false;
         }
     }
-
+    
     private static void printIsYearLeapResult(int number, boolean isLeap) {
         if (isLeap) {
             System.out.println("Год  " + number + " является високосным");
@@ -54,16 +59,16 @@ public class Main {
     }
 
     public static void checkYearAndOs(int number, byte os) {
-        // первый метод проверит год, второй - ОСб третий - печатает
+        // первый метод проверит год, второй - ОС, третий - печатает
         boolean checkYearForOld = isYearOld(number);
         String clientOS = checkClientOS(os);
         printClientResult(clientOS, checkYearForOld);
 
     }
 
-    private static boolean isYearOld(int number) {
+    private static boolean isYearOld(int year) {
         int currentYear = LocalDate.now().getYear();
-        if (number < currentYear) {
+        if (year < currentYear) {
             return true;
         }
         return false;
@@ -77,11 +82,11 @@ public class Main {
         return "Android";
     }
 
-    private static void printClientResult(String name, boolean isOld) {
+    private static void printClientResult(String os, boolean isOld) {
         if (isOld) {
-            System.out.println("Установите облегченную версию приложения для " + name + " по ссылке");
+            System.out.println("Установите облегченную версию приложения для " + os + " по ссылке");
         } else {
-            System.out.println("Установите  версию приложения для " + name + " по ссылке");
+            System.out.println("Установите  версию приложения для " + os + " по ссылке");
         }
     }
 
@@ -92,18 +97,15 @@ public class Main {
     }
 
     private static int culcDeliveryTime(int number) {
-        int deliveryInitial = 1;
-        int deliveryStep = 1;
-        if (number <= 20) {
-            return deliveryInitial;
-        } else if (number <= 60) {
-            return deliveryInitial + deliveryStep;
-        } else if (number <= 100) {
-            return deliveryInitial + deliveryStep * 2;
+        int deliveryDay = 1;
+        if (number > 20 && number <= 60) {
+            deliveryDay =  deliveryDay * 2;
+        } else if (number > 60 && number <= 100) {
+            deliveryDay =  deliveryDay  * 3;
         } else {
-            return deliveryInitial + deliveryStep * 3;
+            deliveryDay =  deliveryDay  * 4;
         }
-
+         return deliveryDay;
     }
 
     private static void printTimeResult(int number) {
@@ -117,7 +119,7 @@ public class Main {
     }
 
     private static char findDoubleSymbol(String symbols) {
-        char arraySomeLetters[] = symbols.toCharArray();
+        char [] arraySomeLetters = symbols.toCharArray();
         for (int i = 0; i < arraySomeLetters.length - 1; ++i) {
             if (arraySomeLetters[i] == arraySomeLetters[i + 1]) {
                 return arraySomeLetters[i];
@@ -156,20 +158,13 @@ public class Main {
         System.out.println("Массив " + Arrays.toString(array));
     }
 
-    public static void culcSumMonthAverage(int number) {
-        // первый метод определит число дней в месяце
-        // второй сгенерит массив
-        // третий расчитает итоговую сумму
-        // четвертый  рассчитает среднее значение
-        // пятый по традиции печатает;
-        if (number > 12) {
-            throw new RuntimeException("Некорректные данные для расчета!");
-        }
-        int dayInTheMonth = culcDayMonth(number);
-        // Для получения массива случайных чисел
-        int[] arr = generateRandomArray(dayInTheMonth);
-        int sumMonth = calcSumMonth(arr);
-        float sumAverage = calcsumAverage(sumMonth, dayInTheMonth);
+    public static void culcSumMonthAverage(int [] arrMonth) {
+        // первый метод расчитает итоговую сумму
+        // второй рассчитает среднее значение
+        // третий по традиции печатает;
+
+        int sumMonth = calcSumMonth(arrMonth);
+        float sumAverage = calcsumAverage(sumMonth, arrMonth.length);
         printSumAverage(sumAverage);
     }
 
@@ -182,9 +177,8 @@ public class Main {
         return arr;
     }
 
-    private static int culcDayMonth(int number) {
-        int dayNumber = 0;
-        switch (number) {
+    private static int culcDayMonth(int numberMonth) {
+        switch (numberMonth) {
             case 1:
             case 3:
             case 5:
@@ -192,21 +186,18 @@ public class Main {
             case 8:
             case 10:
             case 12:
-                dayNumber = 31;
-                break;
+                return 31;
             case 4:
             case 6:
             case 9:
             case 11:
-                dayNumber = 30;
-                break;
+                return 30;
             case 2:
-                dayNumber = 28;
-                break;
+                return 28;
+            default:
+                return 30;
         }
-        return dayNumber;
     }
-
     private static int calcSumMonth(int[] arr) {
         int sumMonth = 0;
         for (int item : arr) {
